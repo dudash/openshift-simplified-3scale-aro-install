@@ -1,6 +1,6 @@
-# Simple 3Scale Install Demo on Azure (2020-09-11)
+# Simple 3Scale Install Demo on Azure
 Install docs for 3scale are pretty overwhelming due to all the options presented. I'm going to walk through a vanilla example of performing a basic install. 
-I am specifically simplifying steps in [this guide][1].
+I am specifically simplifying steps in [this guide][1]. Note, this guide is compiled from an install I did September 2020, if things have changed or you see a mistake [please write an issue here](https://github.com/dudash/openshift-simplified-3scale-aro-install/issues/new).
 
 ## Assumptions 
 * You have an OpenShift cluster and are logged in with some admin rights
