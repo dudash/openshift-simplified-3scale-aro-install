@@ -1,0 +1,11 @@
+apiVersion: apps.3scale.net/v1alpha1
+kind: APIManager
+metadata:
+  name: my-apimanager
+  namespace: myproject
+spec:
+  system:
+    fileStorage:
+      persistentVolumeClaim:
+        storageClassName: azure-file-myproject
+  wildcardDomain: apps.jn5rg0sj.eastus2.aroapp.io
