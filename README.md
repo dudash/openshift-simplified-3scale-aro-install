@@ -128,6 +128,9 @@ Open that URL and walk through the intro tutorial. You're up and running and it 
 
 <img src="./3scale29login.png" alt="lifeline" width="800">
 
+## Gotchas
+A list of other things to be aware of or watch out for.
+* Completely relaxing all security constraints to allow any authenticated user to run using `anyuid` will break mysql and redis templates. Those pods are mounting Azure Disk for persistent storage and the mount owner will be incorrect in this situation. It's probably possible to fix the mount options in a new AzureDisk storage class, but I haven't tested. Also, it's generally just a bad idea to relax SCCs so widely for all pods in your cluster.
 
 [1]: https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.9/html/installing_3scale/install-threescale-on-openshift-guide#deploying-threescale-using-the-operator
 [2]: https://docs.openshift.com/container-platform/4.3/storage/dynamic-provisioning.html#azure-file-definition_dynamic-provisioning
