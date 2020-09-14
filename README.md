@@ -27,15 +27,15 @@ Now we can deploy an operator to manage our 3scale instance install. You'd proba
 Don't have it yet? Goto Operators->OperatorHub in the OpenShift webconsole, find it, and install it. As of right now the operator is version 0.6.0 and 3scale 2.9. Installing it with options: in your project namespace and using an `Automatic` approval strategy.
 
 Now try `oc get subs` again and you should see something like:
-```
-NAME              PACKAGE           SOURCE             CHANNEL
-3scale-operator   3scale-operator   redhat-operators   threescale-2.9
-```
+> ```
+> NAME              PACKAGE           SOURCE             CHANNEL
+> 3scale-operator   3scale-operator   redhat-operators   threescale-2.9
+> ```
 
 ## Setup access to provision AzureFile storage
 
 ### Setup the roles necessary for AzureFile
-We need to give the service account that binds storage additional access so it can create an Azure access secret in our projects. By default ARO doesn't (currently) pre-configure this access, so create below resource to configure that (you can `oc create -f` the file in this repo):
+We need to [give the service account that binds storage additional access][2] so it can create an Azure access secret in our projects. By default ARO doesn't (currently) pre-configure this access, so create below resource to configure that (you can `oc create -f` the file in this repo):
 
 ```
 apiVersion: rbac.authorization.k8s.io/v1
@@ -57,13 +57,13 @@ Now run:
 
 
 ### Setup a new RWX Storage class for 3scale to use
-3Scale needs RWX persistent volumes. In Azure we can use AzureFile for this by creating a new storage class. We also will need to scope the storage class specifically to the project where 3scale will run (due to a known [limitation](https://github.com/MicrosoftDocs/azure-docs/issues/17765) with how AzureFile mounts to Linux)
+3Scale needs RWX persistent volumes. In Azure we can use AzureFile for this by creating a new storage class. We also will need to scope the storage class specifically to the project where 3scale will run (due to a known [limitation][3] with how AzureFile mounts to Linux)
 
 Get your project's uid with:
 `oc describe project YOUR_PROJECT_NAME | grep uid-range`
 
-You should see something like (note the first number is our uid):
-`openshift.io/sa.scc.uid-range=1000740000/10000`
+> You should see something like (note the first number is our uid):
+> `openshift.io/sa.scc.uid-range=1000740000/10000`
 
 Now we can create a storage class using that. Replace the uid in the yaml below with that uid you just got. Also, replace the name if you want to call it something more specific (like your actual project namespace name).
 ```
@@ -112,10 +112,23 @@ Now let's do some 3scaley things
 
 Get your login info with:
 ```
-oc get secret system-seed -o json | jq -r .data.ADMIN_USER | base64 -d
-oc get secret system-seed -o json | jq -r .data.ADMIN_PASSWORD | base64 -d
+oc get secret system-seed -o json | jq -r .data.ADMIN_USER | base64 --decode
+oc get secret system-seed -o json | jq -r .data.ADMIN_PASSWORD | base64 --decode
 ```
+
+Find your URL with:
+`oc get routes | grep admin`
+
+> You see the second column has the URL:
+> ```
+> zync-3scale-provider-vxjt7   3scale-admin.apps.jn5rg0sj.eastus2.aroapp.io                           system-provider      http      edge/Redirect   None
+> ```
+
+Open that URL and walk through the intro tutorial. You're up and running and it looks like this:
+
+<img src="./3scale29login.png" alt="lifeline" width="800">
 
 
 [1]: https://access.redhat.com/documentation/en-us/red_hat_3scale_api_management/2.9/html/installing_3scale/install-threescale-on-openshift-guide#deploying-threescale-using-the-operator
 [2]: https://docs.openshift.com/container-platform/4.3/storage/dynamic-provisioning.html#azure-file-definition_dynamic-provisioning
+[3]: https://github.com/MicrosoftDocs/azure-docs/issues/17765
